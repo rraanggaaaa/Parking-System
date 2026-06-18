@@ -1,0 +1,16 @@
+bin/
+*.exe
+*.dll
+*.so
+*.dylib
+.DS_Store
+.env
+.env.local
+*.log
+vendor/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.tmp/

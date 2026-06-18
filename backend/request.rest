@@ -1,0 +1,341 @@
+### ============================================
+### PARKING MANAGEMENT API TESTING
+### Base URL: http://localhost:8080
+### ============================================
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZGU5NTgyZjYtNjFiNS00MDgxLTlmNDItZWRiZWVjZDljNjIxIiwidXNlcm5hbWUiOiJkd2lyYW5nZ2Fva3RheiIsImlzcyI6ImJhY2tlbmQiLCJzdWIiOiJkZTk1ODJmNi02MWI1LTQwODEtOWY0Mi1lZGJlZWNkOWM2MjEiLCJhdWQiOlsiZnJvbnRlbmQiXSwiZXhwIjoxNzgxODA0ODI2LCJuYmYiOjE3ODE3MTg0MjYsImlhdCI6MTc4MTcxODQyNn0.U_pt2zYFle4619tzcnGTylt1fhyBcJ2-ujgbQ3n0K4A
+### ============================================
+### 1. HEALTH CHECK
+### ============================================
+
+### Health Check
+GET http://localhost:8080/health
+Content-Type: application/json
+
+### ============================================
+### 2. AUTHENTICATION
+### ============================================
+
+### Register User
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "Dwi Rangga Okta Zuhdiyanto",
+  "username": "dwiranggaoktaz",
+  "email": "dwiranggaoktaz@gmail.com",
+  "password": "password123"
+}
+
+### Register User 2 (untuk testing)
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+
+{
+  "name": "Test User",
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "test123"
+}
+
+### Login - Get Token
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "dwiranggaoktaz",
+  "password": "Rangga"
+}
+
+### Login with Test User
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "test123"
+}
+
+### Logout
+POST http://localhost:8080/auth/logout
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ============================================
+### 3. TASKS CRUD - (Requires Authentication)
+### ============================================
+
+### @name Login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "dwiranggaoktaz",
+  "password": "password123"
+}
+
+### @name SetToken
+### Copy token from Login response and set below
+### @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+### ============================================
+### 3.1 GET ALL TASKS
+### ============================================
+
+### Get All Tasks (with Pagination)
+GET http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Get Tasks with Filter (pending)
+GET http://localhost:8080/api/v1/tasks?status=pending
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Get Tasks with Filter (completed)
+GET http://localhost:8080/api/v1/tasks?status=completed
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Get Tasks with Search
+GET http://localhost:8080/api/v1/tasks?search=Parking
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Get Tasks with Pagination
+GET http://localhost:8080/api/v1/tasks?page=1&limit=5
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ============================================
+### 3.2 CREATE TASK
+### ============================================
+
+### Create Parking Task
+POST http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Parking Spot #1",
+  "description": "Reserved by Dwi Rangga - Vehicle: B1234XYZ",
+  "status": "pending",
+  "due_date": "2026-06-20"
+}
+
+### Create Another Task
+POST http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Parking Spot #2",
+  "description": "Reserved by Test User - Vehicle: B5678ABC",
+  "status": "pending",
+  "due_date": "2026-06-21"
+}
+
+### Create Task with No Due Date
+POST http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Meeting Room Reservation",
+  "description": "Reserved for team meeting",
+  "status": "pending"
+}
+
+### Create Completed Task
+POST http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Parking Spot #3",
+  "description": "Reserved by Admin",
+  "status": "completed",
+  "due_date": "2026-06-18"
+}
+
+### ============================================
+### 3.3 GET TASK BY ID
+### ============================================
+
+### Get Task by ID (Replace {id} with actual task ID)
+GET http://localhost:8080/api/v1/tasks/{id}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ============================================
+### 3.4 UPDATE TASK
+### ============================================
+
+### Update Task Status to Completed (Replace {id})
+PUT http://localhost:8080/api/v1/tasks/{id}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "completed"
+}
+
+### Update Task Full (Replace {id})
+PUT http://localhost:8080/api/v1/tasks/{id}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Updated Parking Spot",
+  "description": "Updated description",
+  "status": "pending",
+  "due_date": "2026-06-25"
+}
+
+### ============================================
+### 3.5 DELETE TASK
+### ============================================
+
+### Delete Task by ID (Replace {id})
+DELETE http://localhost:8080/api/v1/tasks/{id}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ============================================
+### 4. COMPLETE FLOW EXAMPLE
+### ============================================
+
+### Step 1: Login
+# @name loginResponse
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "dwiranggaoktaz",
+  "password": "password123"
+}
+
+### Step 2: Save Token (Manual - copy from loginResponse)
+### @token = your_token_here
+
+### Step 3: Create Task
+POST http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "VIP Parking #5",
+  "description": "Reserved for CEO - Vehicle: VIP01",
+  "status": "pending",
+  "due_date": "2026-06-30"
+}
+
+### Step 4: Get All Tasks
+GET http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Step 5: Get Specific Task (Replace ID)
+GET http://localhost:8080/api/v1/tasks/{id}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Step 6: Update Task (Replace ID)
+PUT http://localhost:8080/api/v1/tasks/{id}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "completed"
+}
+
+### Step 7: Delete Task (Replace ID)
+DELETE http://localhost:8080/api/v1/tasks/{id}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ============================================
+### 5. ERROR CASES
+### ============================================
+
+### Unauthorized - No Token
+GET http://localhost:8080/api/v1/tasks
+Content-Type: application/json
+
+### Unauthorized - Invalid Token
+GET http://localhost:8080/api/v1/tasks
+Authorization: Bearer invalid_token_here
+Content-Type: application/json
+
+### Task Not Found
+GET http://localhost:8080/api/v1/tasks/invalid-id
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### Invalid Request - Missing Title
+POST http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "description": "Missing title field"
+}
+
+### ============================================
+### 6. HOW TO USE WITH VARIABLES
+### ============================================
+
+### Step 1: Run Login request below to get token
+# @name login
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+
+{
+  "username": "dwiranggaoktaz",
+  "password": "password123"
+}
+
+### Step 2: Copy token from response and paste in the variable below
+### @token = your_token_here
+
+### Step 3: Run this after setting token
+GET http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ============================================
+### 7. BULK TESTING
+### ============================================
+
+### Create Multiple Tasks
+POST http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "Parking Spot #10",
+  "description": "Regular parking",
+  "status": "pending",
+  "due_date": "2026-07-01"
+}
+
+### Get All Tasks to Verify
+GET http://localhost:8080/api/v1/tasks
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ============================================
+### 8. CLEANUP
+### ============================================
+
+### Logout (Optional)
+POST http://localhost:8080/auth/logout
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### ============================================
+### NOTES:
+### 1. Replace {{token}} with actual JWT token from login
+### 2. Replace {id} with actual task ID from GET response
+### 3. Use REST Client extension in VS Code
+### 4. Or use Postman/Insomnia to run these requests
+### ============================================
